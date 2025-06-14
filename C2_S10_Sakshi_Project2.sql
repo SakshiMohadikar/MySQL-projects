@@ -1,0 +1,306 @@
+-- PROJECT 2 --
+
+-- TASK 1.1 --
+-- We will use employees table
+-- Use count() func to get the total num of employees
+SELECT count(*) AS total_no_of_employees from employees;
+
+
+-- TASK 1.2 --
+-- list basic details so we can use * to display the details
+SELECT * FROM employees; 
+
+
+-- TASK 1.3
+-- Count the number of employees holding each job title
+-- Only one table will be used as we need count of No. of employees and JobTitle
+-- Retrieve Jobtitle from employees table
+-- To count the no. of employees, aggregate func COUNT() will be used
+-- And Group by Jobtitle
+SELECT jobTitle, COUNT(*) AS NumberOfEmployees 
+FROM employees 
+GROUP BY jobTitle;
+
+
+-- TASK 1.4 --
+-- Find the employees who don't have a manager(reports to is NULL)
+-- Retrieve employeenumber, firstname. lastname, jobtitle from employees table
+-- As given, reports to should be NULL, so using where clause we can find employees who don't have a manager 
+-- Only employees table will be used (where reportsto is NULL)
+SELECT employeeNumber, firstName, lastName, jobTitle
+FROM employees
+WHERE reportsTo IS NULL;
+
+
+-- TASK 1.5 --
+-- Function and clause used are SUM() and group by and order by
+-- JOIN 4 tables orderdetails, orders, employees and customers
+-- we have to aggregate total order amount per employee.
+-- GROUP by firstname
+SELECT e.firstName, SUM(quantityOrdered * priceEach) as Total_sales
+from orderdetails od
+JOIN orders o ON od.orderNumber = o.orderNumber
+JOIN customers c ON o.customerNumber = c.customerNumber
+JOIN employees e ON c.salesRepEmployeeNumber = e.employeeNumber
+GROUP BY e.firstName
+ORDER BY Total_sales DESC;
+
+ 
+ -- TASK 1.6 --
+ -- Function and clause used are SUM() and group by and order by
+-- JOIN 4 tables orderdetails, orders, employees and customers
+-- we have to aggregate total order amount per employee.
+-- GROUP by firstname
+-- find most profitbale sales rep, use LIMIT
+SELECT e.firstName, SUM(quantityOrdered * priceEach) as Total_sales
+from orderdetails od
+JOIN orders o ON od.orderNumber = o.orderNumber
+JOIN customers c ON o.customerNumber = c.customerNumber
+JOIN employees e ON c.salesRepEmployeeNumber = e.employeeNumber
+GROUP BY e.firstName
+ORDER BY Total_sales DESC
+LIMIT 1;
+ 
+ 
+ -- TASK 1.7 --
+-- select office code from office table and employee number,first name,last name,aggregate total sales value using formula sum(orderdetails.quantityordered * orderdetails.priceEach) from employee table
+-- join office, employees, customer, orders, order details tables 
+-- group by fristname
+-- use having clause and comparision operator to find total sales value greater than avg of (quantityordered * priceEach)
+SELECT e.firstName, SUM(quantityOrdered * priceEach) as Total_sales
+from orderdetails od
+JOIN orders o ON od.orderNumber = o.orderNumber
+JOIN customers c ON o.customerNumber = c.customerNumber
+JOIN employees e ON c.salesRepEmployeeNumber = e.employeeNumber
+GROUP BY e.firstName
+HAVING Total_sales > AVG(quantityOrdered * priceEach);
+
+
+-- TASK 2.1 --
+-- take customers table and select customer name and use sub query to find the average order amount ,
+-- for this I used avg() aggregated function for amount from payment table and used where clause to specify condition and named it as average_order_amount 
+-- used where and in clause to find the avg order amount for each customer
+SELECT customerName,
+(SELECT AVG(p.amount) FROM payments p
+WHERE p.customerNumber = c.customerNumber) AS average_order_amount
+FROM customers c;
+
+-- TASK 2.2 --
+-- FIND THE ORDER DETAILS MAINLY THE COUNT OF THE ORDER NUMBER
+-- GROUP THEM BY EVERY MONTH AND ALSO YEAR 
+-- BY SELECTING COUNT THE NUMBER OF ORDERS, WE WILL DISPLAY THE YEAR AND MONTH OF THE ORDER 
+SELECT month(orderDate) AS order_month, year(orderDate) AS order_year, Count(orderNumber) as no_of_orders
+from orders
+GROUP BY orderDate
+ORDER BY orderDate;
+
+-- TASK 2.3 -- 
+-- SELECTING THE ORDER NUMBER AND STATUS COLUMNS FROM ORDERS TABLE
+-- USING WHERE CLAUSE FILTERING THE 'PENDING' AND 'CANCELLED' ORDERS FROM THE STATUS COLUMN
+SELECT orderNumber, status from orders
+where status IN ("Cancelled", "Pending");
+
+-- TASK 2.4 --
+/* 4) list of order along customer
+join function used for joining the orders and customer 
+selected customer details*/
+SELECT c.customerName, o.orderNumber, o.orderDate
+from customers c
+JOIN orders o ON c.customerNumber = o.customerNumber;
+
+-- TASK 2.5 --
+/* 5) Retrieve most recent order
+used descending order on orderdate
+used limit to have number of recent order*/
+
+SELECT orderNumber, orderDate
+from orders
+ORDER BY  orderDate DESC
+LIMIT 1;
+
+
+-- TASK 2.6 --
+/*
+-we want the order number and the total sales for that ordere number desplayed in final output
+-we use sum(quantity * price) for the total sales 
+-tables that is being used is orderdetails
+-we group then by ordernumber 
+*/
+SELECT o.orderDate, o.orderNumber, SUM(quantityOrdered * priceEach) AS total_sales
+from orders o
+JOIN orderdetails od ON o.orderNumber = od.orderNumber
+GROUP BY o.orderDate, o.orderNumber
+ORDER BY total_sales DESC;
+
+
+-- TASK 2.7 --
+-- same as above task
+-- we will use LIMIT 1 to get the highest-value order based on total sales
+SELECT o.orderDate, o.orderNumber, SUM(quantityOrdered * priceEach) AS total_sales
+from orders o
+JOIN orderdetails od ON o.orderNumber = od.orderNumber
+GROUP BY o.orderDate, o.orderNumber
+ORDER BY total_sales DESC
+LIMIT 1;
+
+
+-- TASK 2.8 --
+-- Two tables ('orders' & 'orderdetails') are joined
+--  6 columns  : orders.orderNumber, orders.orderDate, orders.status,
+-- orderdetails.productCode, orderdetails.quantityOrdered, orderdetails.priceEach are retrieved
+SELECT o.orderDate, o.orderNumber, o.status, od.productCode, od.quantityOrdered, od.priceEach
+from orders o
+JOIN orderdetails od ON o.orderNumber = od.orderNumber;
+
+
+-- TASk 2.9 --
+-- Two tables ('products' & 'orderdetails') are joined
+-- COUNT fn. used to find the no. of quantity ordered
+-- GROUP BY clause used to display result 'productcode' wise
+-- ORDER BY DESC used 
+-- LIMIT set at 1
+SELECT od.productCode, p.productName, COUNT(quantityOrdered) AS total_quantity
+from orderdetails od
+JOIN products p ON od.productCode = p.productCode
+GROUP BY od.productCode, p.productName
+ORDER BY p.productName DESC
+LIMIT 1;
+
+
+-- TASK 2.10 --
+-- TOTAL REVENUE = TOTAL QUANTITY ORDERD * PRICE EACH ITEM SO TO GET THE TOTAL REVENUE FOR EACH PRODUCT
+-- GET THE SUM OF QUANTITY ORDER AND MULTIPLY WITH PRICE EACH WITH GROUP BY PRODUCT CODE OF ORDER DETAILS TABLE.
+-- OPTIONAL: IF YOU WANT TO DISPLAY THE PRODUCT NAME THEN USE INNER JOIN WITH PRODUCTS TABLE AND SHOW THE PRODUCT NAME COLUMN FROM PRODUCT TABLE
+-- NOTE: YOU NEED TI GROUP BY ALL THE ADDITIONAL COULUMN.
+SELECT o.orderNumber,o.orderDate, SUM(od.quantityOrdered * od.priceEach) AS total_revenue
+FROM orders o
+JOIN orderdetails od ON o.orderNumber = od.orderNumber
+GROUP BY o.orderNumber, o.orderDate;
+
+-- TASK 2.11 --
+-- same as above task
+-- order by total revenue and limit 1
+SELECT o.orderNumber,o.orderDate, SUM(od.quantityOrdered * od.priceEach) AS total_revenue
+FROM orders o
+JOIN orderdetails od ON o.orderNumber = od.orderNumber
+GROUP BY o.orderNumber, o.orderDate
+ORDER BY total_revenue
+LIMIT 1;
+
+
+-- TASk 2.12 -- 
+-- taking orders table, order details table and products table 
+-- then join the tables order details table with orders table 
+-- and again joining the products table with order details table and then grouping by ordernumber.
+SELECT o.orderDate, p.productName, p.productLine
+from orders o
+JOIN orderdetails od ON o.orderNumber = od.orderNumber
+JOIN products p ON od.productCode = p.productCode;
+
+-- TASK 2.13 --
+-- taking orders table and used where clause for shippedDate >requiredDate.
+SELECT orderNumber, orderDate from orders
+where shippedDate > requiredDate;
+
+
+-- TASK 2.14 -- 
+-- Retrieve orderdate, productname from orders
+-- Join orderdetails and order
+-- Then with products table
+SELECT o.orderDate, p.productName, p.productLine
+from orders o
+JOIN orderdetails od ON o.orderNumber = od.orderNumber
+JOIN products p ON od.productCode = p.productCode;
+
+
+-- TASK 2.15 --
+-- TOTAL REVENUE = TOTAL QUANTITY ORDERD * PRICE EACH ITEM SO TO GET THE TOTAL REVENUE FOR EACH PRODUCT
+-- GET THE SUM OF QUANTITY ORDER AND MULTIPLY WITH PRICE EACH WITH GROUP BY PRODUCT CODE OF ORDER DETAILS TABLE.
+-- OPTIONAL: IF YOU WANT TO DISPLAY THE PRODUCT NAME THEN USE INNER JOIN WITH PRODUCTS TABLE AND SHOW THE PRODUCT NAME COLUMN FROM PRODUCT TABLE
+-- NOTE: YOU NEED TI GROUP BY ALL THE ADDITIONAL COULUMN. and limit by 10
+SELECT o.orderNumber,o.orderDate, SUM(od.quantityOrdered * od.priceEach) AS total_revenue
+FROM orders o
+JOIN orderdetails od ON o.orderNumber = od.orderNumber
+GROUP BY o.orderNumber, o.orderDate
+ORDER BY total_revenue DESC
+LIMIT 10;
+
+
+-- TASK 2.16 --
+-- Create a trigger that fires after a new order is inserted into the 'orders' table
+-- Declare a variable to hold the total amount for the new order
+-- Declare a variable to hold the customer number associated with the new order
+-- Get the customerNumber from the newly inserted order and store it in 'customer_num'
+-- Calculate the total value of the new order by multiplying quantityOrdered and priceEach for each item
+-- Sum the total for all items associated with the new order's orderNumber
+-- Subtract the order's total value from the customer's credit limit
+-- Update the customer's record with the new credit limit
+
+DELIMITER //
+
+CREATE TRIGGER after_order_insert_update_credit_limit
+AFTER INSERT ON orders
+FOR EACH ROW
+BEGIN
+	
+    DECLARE order_total DECIMAL(10,2);
+    DECLARE customer_num INT;
+
+    -- Get the customerNumber from the new order
+    SET customer_num = NEW.customerNumber;
+
+    -- Calculate the total for the newly inserted order using orderdetails
+    -- Ensure to sum up all items for the specific NEW.orderNumber
+    SELECT SUM(od.quantityOrdered * od.priceEach)
+    INTO order_total
+    FROM orderdetails od
+    WHERE od.orderNumber = NEW.orderNumber;
+
+    -- Update the customer's credit limit
+    UPDATE customers
+    SET creditLimit = creditLimit - order_total
+    WHERE customerNumber = customer_num;
+END //
+
+DELIMITER ;
+
+
+
+-- TASk 2.17 --
+-- Create a trigger name after_orderdetails_change
+-- We will use AFTER INSERT
+-- Declare quantities old and new
+-- Get current stock before change
+-- Subtract ordered quantity
+ -- Update stock in products table
+ -- And then in the end, Log the change
+
+DELIMITER //
+
+CREATE TRIGGER after_orderdetails_change
+AFTER INSERT ON orderdetails
+FOR EACH ROW
+BEGIN
+    DECLARE old_qty INT;
+    DECLARE new_qty INT;
+
+    -- Get current stock before change
+    SELECT quantityInStock INTO old_qty
+    FROM products
+    WHERE productCode = NEW.productCode;
+
+    -- Subtract ordered quantity
+    SET new_qty = old_qty - NEW.quantityOrdered;
+
+    -- Update stock in products table
+    UPDATE products
+    SET quantityInStock = new_qty
+    WHERE productCode = NEW.productCode;
+
+    -- Log the change
+    INSERT INTO product_quantity_log (productCode, old_quantity, new_quantity)
+    VALUES (NEW.productCode, old_qty, new_qty);
+
+END //
+
+DELIMITER ;
