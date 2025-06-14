@@ -1,4 +1,4 @@
-# MySQL Project: 25 Tasks
+# MySQL Project: 50+ Tasks
 
 This repository contains 50+ MySQL tasks designed to practice and demonstrate a range of database operations and SQL concepts.
 
