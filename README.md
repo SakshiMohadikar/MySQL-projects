@@ -1,10 +1,11 @@
 # MySQL Project: 25 Tasks
 
-This repository contains 30 MySQL tasks designed to practice and demonstrate a range of database operations and SQL concepts.
+This repository contains 50+ MySQL tasks designed to practice and demonstrate a range of database operations and SQL concepts.
 
 ## 📜 Project Structure
 
 - `C2_S9_Saksh_PB.sql` — Contains all the tasks implemented
+- `C2_S10_Saksh_PB.sql` — Contains all the tasks implemented
 
 ## 💾 How to Run
 
