@@ -3,7 +3,7 @@
 This repository contains 50+ MySQL tasks designed to practice and demonstrate a range of database operations and SQL concepts.
 
 ## 📜 Project Structure
-
+- Used DS1_C2_S9_Database_modelcarsdb.sql to perform tasks
 - `C2_S9_Saksh_PB.sql` — Contains all the tasks implemented
 - `C2_S10_Saksh_PB.sql` — Contains all the tasks implemented
 
